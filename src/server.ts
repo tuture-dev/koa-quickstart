@@ -2,10 +2,12 @@ import Koa from 'koa';
 import cors from '@koa/cors';
 import bodyParser from 'koa-bodyparser';
 import { createConnection } from 'typeorm';
+import jwt from 'koa-jwt';
 import 'reflect-metadata';
 
-import router from './routes';
+import { protectedRouter, unprotectedRouter } from './routes';
 import { logger } from './logger';
+import { JWT_SECRET } from './constants';
 
 createConnection()
   .then(() => {
@@ -17,8 +19,14 @@ createConnection()
     app.use(cors());
     app.use(bodyParser());
 
-    // 响应用户请求
-    app.use(router.routes()).use(router.allowedMethods());
+    // 无需 JWT Token 即可访问
+    app.use(unprotectedRouter.routes()).use(unprotectedRouter.allowedMethods());
+
+    // 注册 JWT 中间件
+    app.use(jwt({ secret: JWT_SECRET }).unless({ method: 'GET' }));
+
+    // 需要 JWT Token 才可访问
+    app.use(protectedRouter.routes()).use(protectedRouter.allowedMethods());
 
     // 运行服务器
     app.listen(3000);
