@@ -1,0 +1,13 @@
+{
+  "type": "mysql",
+  "host": "localhost",
+  "port": 3306,
+  "username": "user",
+  "password": "pass",
+  "database": "koa",
+  "synchronize": true,
+  "entities": ["src/entity/*.ts"],
+  "cli": {
+    "entitiesDir": "src/entity"
+  }
+}

@@ -25,7 +25,11 @@
   "dependencies": {
     "@koa/cors": "^3.0.0",
     "@koa/router": "^8.0.8",
+    "argon2": "^0.26.2",
     "koa": "^2.11.0",
-    "koa-bodyparser": "^4.3.0"
+    "koa-bodyparser": "^4.3.0",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.25"
   }
 }
