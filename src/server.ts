@@ -19,6 +19,16 @@ createConnection()
     app.use(cors());
     app.use(bodyParser());
 
+    app.use(async (ctx, next) => {
+      try {
+        await next();
+      } catch (err) {
+        // 只返回 JSON 格式的响应
+        ctx.status = err.status || 500;
+        ctx.body = { message: err.message };
+      }
+    });
+
     // 无需 JWT Token 即可访问
     app.use(unprotectedRouter.routes()).use(unprotectedRouter.allowedMethods());
 

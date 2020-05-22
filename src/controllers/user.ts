@@ -2,6 +2,7 @@ import { Context } from 'koa';
 import { getManager } from 'typeorm';
 
 import { User } from '../entity/user';
+import { NotFoundException, ForbiddenException } from '../exceptions';
 
 export default class UserController {
   public static async listUsers(ctx: Context) {
@@ -20,7 +21,7 @@ export default class UserController {
       ctx.status = 200;
       ctx.body = user;
     } else {
-      ctx.status = 404;
+      throw new NotFoundException();
     }
   }
 
@@ -28,9 +29,7 @@ export default class UserController {
     const userId = +ctx.params.id;
 
     if (userId !== +ctx.state.user.id) {
-      ctx.status = 403;
-      ctx.body = { message: '无权进行此操作' };
-      return;
+      throw new ForbiddenException();
     }
 
     const userRepository = getManager().getRepository(User);
@@ -49,9 +48,7 @@ export default class UserController {
     const userId = +ctx.params.id;
 
     if (userId !== +ctx.state.user.id) {
-      ctx.status = 403;
-      ctx.body = { message: '无权进行此操作' };
-      return;
+      throw new ForbiddenException();
     }
 
     const userRepository = getManager().getRepository(User);
