@@ -1,0 +1,5011 @@
+{
+  "name": "一杯茶的时间，上手 Koa2 框架开发",
+  "description": "",
+  "id": "67e4c197b5b7",
+  "created": "2020-05-22T01:47:30.970Z",
+  "articles": [
+    {
+      "id": "fac8401c",
+      "name": "一杯茶的时间，上手 Koa2 + MySQL 开发",
+      "description": "凭借精巧的“洋葱模型”和对 Promise 以及 async/await 异步编程的完全支持，Koa 框架自从诞生以来就吸引了无数 Node 爱好者。然而 Koa 本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持。这篇教程不仅会带你梳理 Koa 的基础知识，还会充分地运用和讲解构建 Web 应用必须的组件（路由、数据库、鉴权等），最终实现一个较为完善的用户系统。",
+      "topics": [],
+      "categories": [],
+      "created": "2020-05-22T01:47:30.970Z",
+      "cover": ""
+    }
+  ],
+  "steps": [
+    {
+      "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+      "id": "be3dd4c9",
+      "articleId": "fac8401c",
+      "type": "step",
+      "children": [
+        {
+          "type": "heading-two",
+          "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+          "id": "4c0f9e8d",
+          "fixed": true,
+          "children": [
+            {
+              "text": "起步"
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "Koa 作为 Express 原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。正如 Koa 作者们在"
+                },
+                {
+                  "text": "文档",
+                  "link": true,
+                  "url": "https://github.com/koajs/koa/blob/master/docs/koa-vs-express.md"
+                },
+                {
+                  "text": "中所指出的："
+                }
+              ],
+              "id": "ZS2HesUcK"
+            },
+            {
+              "type": "block-quote",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "Philosophically, Koa aims to \"fix and replace node\", whereas Express \"augments node\".（Express 是 Node 的补强，而 Koa 则是为了解决 Node 的问题并取代之。）"
+                    }
+                  ],
+                  "id": "ZS2HesUcK"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "在这一篇文章中，我们将手把手带你开发一个简单的用户系统 REST API，支持用户的增删改查以及 JWT 鉴权，从实战中感受 Koa2 的精髓，它相比于 Express 做出的突破性的改变。我们将选择 "
+                },
+                {
+                  "text": "TypeScript",
+                  "link": true,
+                  "url": "https://www.typescriptlang.org/"
+                },
+                {
+                  "text": " 作为开发语言，数据库选用 MySQL，并使用 "
+                },
+                {
+                  "text": "TypeORM",
+                  "link": true,
+                  "url": "https://github.com/typeorm/typeorm"
+                },
+                {
+                  "text": " 作为数据库桥接层。"
+                }
+              ],
+              "id": "ZS2HesUcK"
+            },
+            {
+              "type": "note",
+              "level": "warning",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "这篇文章不会涉及 Koa 源码级别的原理分析，重心会放在让你完全掌握如何去使用 Koa 及周边生态去开发 Web 应用，并欣赏 Koa 的设计之美。此外，"
+                    },
+                    {
+                      "text": "这篇教程比较长",
+                      "bold": true
+                    },
+                    {
+                      "text": "，如果一杯茶不够的话可以续杯~"
+                    }
+                  ],
+                  "id": "ZS2HesUcK"
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "预备知识"
+                }
+              ],
+              "id": "ZS2HesUcK"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "本教程假定你已经具备了以下知识："
+                }
+              ]
+            },
+            {
+              "type": "bulleted-list",
+              "children": [
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "JavaScript 语言基础知识（包括一些常用的 ES6+ 语法）"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "Node.js 基础知识，还有 npm 的基本使用，可以参考"
+                    },
+                    {
+                      "text": "这篇教程",
+                      "link": true,
+                      "url": "https://tuture.co/2019/12/03/892fa12/"
+                    },
+                    {
+                      "text": "进行学习"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "TypeScript 基础知识，只需了解简单的类型注解就可以了，可以参考我们的 "
+                    },
+                    {
+                      "text": "TypeScript 系列教程",
+                      "link": true,
+                      "url": "https://tuture.co/tags/TypeScript/"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "（非必须）",
+                      "italic": true
+                    },
+                    {
+                      "text": "Express 框架基础知识，对于体验 Koa 之美大有帮助，而且在本文中我们会大量穿插和 Express 的对比，可参考"
+                    },
+                    {
+                      "text": "这篇教程",
+                      "link": true,
+                      "url": "https://tuture.co/2019/11/26/cd5b993/"
+                    },
+                    {
+                      "text": "进行学习"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "所用技术"
+                }
+              ],
+              "id": "yzs_WRLGo"
+            },
+            {
+              "type": "bulleted-list",
+              "children": [
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "Node.js：10.x 及以上"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "npm：6.x 及以上"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "Koa：2.x"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "MySQL：推荐稳定的 5.7 版本及以上"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "TypeORM：0.2.x"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "学习目标"
+                }
+              ],
+              "id": "OSbiMW2EQ"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "学完这篇教程，你将学会："
+                }
+              ]
+            },
+            {
+              "type": "bulleted-list",
+              "children": [
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "如果编写 Koa 中间件"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "通过 "
+                    },
+                    {
+                      "text": "@koa/router",
+                      "code": true
+                    },
+                    {
+                      "text": " 实现路由配置"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "通过 TypeORM 连接和读写 MySQL 数据库（其他数据库都类似）"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "了解 JWT 鉴权的原理，并动手实现"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "掌握 Koa 的错误处理机制"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "准备初始代码"
+                }
+              ],
+              "id": "NbD1K7QJI"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "我们已经为你准备好了项目的脚手架，运行以下命令克隆我们的初始代码："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "git clone -b start-point https://github.com/tuture-dev/koa-quickstart.git"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "如果你访问 GitHub 不流畅，可以克隆我们的 Gitee 仓库："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "git clone -b start-point https://gitee.com/tuture/koa-quickstart.git"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "然后进入项目，安装依赖："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "cd koa-quickstart && npm install"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "note",
+              "level": "warning",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "这里我使用了 "
+                    },
+                    {
+                      "text": "package-lock.json",
+                      "code": true
+                    },
+                    {
+                      "text": " 确保所有依赖版本一致，如果你用 "
+                    },
+                    {
+                      "text": "yarn",
+                      "code": true
+                    },
+                    {
+                      "text": " 安装依赖出现问题，建议删除 "
+                    },
+                    {
+                      "text": "node_modules",
+                      "code": true
+                    },
+                    {
+                      "text": " ，重新用 "
+                    },
+                    {
+                      "text": "npm install",
+                      "code": true
+                    },
+                    {
+                      "text": " 安装。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "file": ".gitignore",
+          "display": false,
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": ".gitignore",
+              "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": ".prettierrc",
+          "display": false,
+          "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": ".prettierrc",
+              "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": ".vscode/settings.json",
+          "display": false,
+          "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": ".vscode/settings.json",
+              "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "package-lock.json",
+          "display": false,
+          "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package-lock.json",
+              "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "package.json",
+          "display": false,
+          "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package.json",
+              "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/server.ts",
+          "display": true,
+          "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "最简单的 Koa 服务器"
+                    }
+                  ],
+                  "id": "V9URbH5ir"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "创建 "
+                    },
+                    {
+                      "text": "src/server.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，编写第一个 Koa 服务器，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/server.ts",
+              "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "整个流程与一个基本的 Express 服务器几乎完全一致："
+                    }
+                  ]
+                },
+                {
+                  "type": "numbered-list",
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "初始化应用实例 "
+                        },
+                        {
+                          "text": "app",
+                          "code": true
+                        },
+                        {
+                          "text": " "
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "numbered-list",
+                      "number": 1
+                    },
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "注册相关的中间件（跨域 "
+                        },
+                        {
+                          "text": "cors",
+                          "code": true
+                        },
+                        {
+                          "text": " 和请求体解析中间件 "
+                        },
+                        {
+                          "text": "bodyParser",
+                          "code": true
+                        },
+                        {
+                          "text": "）"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "numbered-list",
+                      "number": 2
+                    },
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "添加请求处理函数，响应用户请求"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "numbered-list",
+                      "number": 3
+                    },
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "运行服务器"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "numbered-list",
+                      "number": 4
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "定睛一看，第 3 步中的请求处理函数（Request Handler）好像不太一样。在 Express 框架中，一个请求处理函数一般是这样的："
+                    }
+                  ]
+                },
+                {
+                  "type": "code-block",
+                  "lang": "js",
+                  "children": [
+                    {
+                      "type": "code-line",
+                      "children": [
+                        {
+                          "text": "function handler(req, res) {"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "code-line",
+                      "children": [
+                        {
+                          "text": "  res.send('Hello Express');"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "code-line",
+                      "children": [
+                        {
+                          "text": "}"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "两个参数分别对应请求对象（Request）和响应对象（Response），但是在 Koa 中，请求处理函数却只有一个参数 "
+                    },
+                    {
+                      "text": "ctx",
+                      "code": true
+                    },
+                    {
+                      "text": " （Context，上下文），然后只需向上下文对象写入相关的属性即可（例如这里就是写入到返回数据 "
+                    },
+                    {
+                      "text": "body",
+                      "code": true
+                    },
+                    {
+                      "text": " 中）："
+                    }
+                  ]
+                },
+                {
+                  "type": "code-block",
+                  "lang": "js",
+                  "children": [
+                    {
+                      "type": "code-line",
+                      "children": [
+                        {
+                          "text": "function handler(ctx) {"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "code-line",
+                      "children": [
+                        {
+                          "text": "  ctx.body = 'Hello Koa';"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "code-line",
+                      "children": [
+                        {
+                          "text": "}"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "我的天，Koa 这是故意偷工减料的吗？先不用急，我们马上在下一节讲解中间件时就会了解到 Koa 这样设计的独到之处。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "tsconfig.json",
+          "display": false,
+          "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "tsconfig.json",
+              "commit": "f1e6778852a7d4fb38feba304d0e5c4d20dcc927",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "运行服务器"
+                }
+              ],
+              "id": "BnDUl6y1G"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "我们通过 "
+                },
+                {
+                  "text": "npm start",
+                  "code": true
+                },
+                {
+                  "text": " 就能开启服务器了。可以通过 Curl （或者 Postman 等）来测试我们的 API："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl localhost:3000"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "Hello Koa"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "note",
+              "level": "info",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "我们的脚手架中配置好了 "
+                    },
+                    {
+                      "text": "Nodemon",
+                      "link": true,
+                      "url": "https://github.com/remy/nodemon"
+                    },
+                    {
+                      "text": "，因此接下来无需关闭服务器，修改代码保存后会自动加载最新的代码并运行。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "commit": "ef879a5bc3d20d212821ec75c2fa25a163d3b38b",
+      "id": "845478ec",
+      "articleId": "fac8401c",
+      "type": "step",
+      "children": [
+        {
+          "type": "heading-two",
+          "commit": "ef879a5bc3d20d212821ec75c2fa25a163d3b38b",
+          "id": "c874ce00",
+          "fixed": true,
+          "children": [
+            {
+              "text": "第一个 Koa 中间件"
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "严格意义上来说，Koa 只是一个中间件框架，正如它的介绍所说："
+                }
+              ]
+            },
+            {
+              "type": "block-quote",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "Expressive middleware for node.js using ES2017 async functions.（通过 ES2017 async 函数编写富有表达力的 Node.js 中间件）"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "下面这个表格更能说明 Koa 和 Express 的鲜明对比："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/d128dbbc-1c73-4ade-aae1-3130017506a5.png"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "可以看到，Koa 实际上对标的是 "
+                },
+                {
+                  "text": "Connect",
+                  "url": "https://github.com/senchalabs/connect",
+                  "link": true
+                },
+                {
+                  "text": "（Express 底层的中间件层），而不包含 Express 所拥有的其他功能，例如路由、模板引擎、发送文件等。接下来，我们就来学习 Koa 最重要的知识点："
+                },
+                {
+                  "text": "中间件",
+                  "bold": true
+                },
+                {
+                  "text": "。"
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "大名鼎鼎的“洋葱模型”"
+                }
+              ],
+              "id": "ybY46Q52k"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "你也许从来没有用过 Koa 框架，但很有可能听说过“洋葱模型”，而 Koa 正是洋葱模型的代表框架之一。下面这个图你也许很熟悉了："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/0279a119-5141-4582-a00e-44bd7c88bb7b.jpg"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "不过以个人观点，这个图实在是太像“洋葱”了，反而不太好理解。接下来我们将以更清晰直观的方式来感受 Koa 中间件的设计之美。首先我们来看一下 Express 的中间件是什么样的："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/7d05a228-825a-4ea6-8378-06d9d6ae67dc.jpg"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "请求（Request）直接依次贯穿各个中间件，最后通过请求处理函数返回响应（Response），非常简单。然后我们来看看 Koa 的中间件是什么样的："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/07f66398-36eb-4d58-b6ed-a0be222b94f5.jpg"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "可以看到，Koa 中间件不像 Express 中间件那样在请求通过了之后就完成了自己的使命；相反，中间件的执行清晰地分为"
+                },
+                {
+                  "text": "两个阶段",
+                  "bold": true
+                },
+                {
+                  "text": "。我们马上来看下 Koa 中间件具体是什么样的。"
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "Koa 中间件的定义"
+                }
+              ],
+              "id": "3UTWmKaR5"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "Koa 的中间件是这样一个函数："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "js",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "async function middleware(ctx, next) {"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "  // 第一阶段"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "  await next();"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "  // 第二阶段"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "第一个参数就是 Koa Context，也就是上图中贯穿所有中间件和请求处理函数的绿色箭头所传递的内容，里面"
+                },
+                {
+                  "text": "封装了请求体和响应体",
+                  "bold": true
+                },
+                {
+                  "text": "（实际上还有其他属性，但这里暂时不讲），分别可以通过 "
+                },
+                {
+                  "text": "ctx.request",
+                  "code": true
+                },
+                {
+                  "text": " 和 "
+                },
+                {
+                  "text": "ctx.response",
+                  "code": true
+                },
+                {
+                  "text": " 来获取，以下是一些常用的属性："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "js",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "ctx.url    // 相当于 ctx.request.url"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "ctx.body   // 相当于 ctx.response.body"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "ctx.status // 相当于 ctx.response.status"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "note",
+              "level": "info",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "关于所有请求和响应上面的属性及其别称，请参考 "
+                    },
+                    {
+                      "text": "Context API 文档",
+                      "link": true,
+                      "url": "https://github.com/koajs/koa/blob/master/docs/api/context.md"
+                    },
+                    {
+                      "text": "。"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "中间件的第二个参数便是 "
+                },
+                {
+                  "text": "next",
+                  "code": true
+                },
+                {
+                  "text": " 函数，这个熟悉 Express 的同学一定知道它是干什么的：用来把控制权转交给下一个中间件。但是它跟 Express 的 "
+                },
+                {
+                  "text": "next",
+                  "code": true
+                },
+                {
+                  "text": " 函数本质的区别在于，"
+                },
+                {
+                  "text": "Koa 的 ",
+                  "bold": true
+                },
+                {
+                  "text": "next",
+                  "code": true,
+                  "bold": true
+                },
+                {
+                  "text": " 函数返回的是一个 Promise",
+                  "bold": true
+                },
+                {
+                  "text": "，在这个 Promise 进入完成状态（Fulfilled）后，就会去执行中间件中第二阶段的代码。"
+                }
+              ],
+              "id": "Ua4uloPIj"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "那么我们不禁要问：这样把中间件的执行拆分为两个阶段，到底有什么好处吗？我们来通过一个非常经典的例子来感受一下：日志记录中间件（包括响应时间的计算）。"
+                }
+              ],
+              "id": "Ua4uloPIj"
+            }
+          ]
+        },
+        {
+          "file": "src/logger.ts",
+          "display": true,
+          "commit": "ef879a5bc3d20d212821ec75c2fa25a163d3b38b",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "实战：日志记录中间件"
+                    }
+                  ],
+                  "id": "UBVzdDAVW"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "让我们来实现一个简单的日志记录中间件 "
+                    },
+                    {
+                      "text": "logger",
+                      "code": true
+                    },
+                    {
+                      "text": " ，用于记录每次请求的方法、URL、状态码和响应时间。创建 "
+                    },
+                    {
+                      "text": "src/logger.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/logger.ts",
+              "commit": "ef879a5bc3d20d212821ec75c2fa25a163d3b38b",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "严格意义上讲，这里的 "
+                    },
+                    {
+                      "text": "logger",
+                      "code": true
+                    },
+                    {
+                      "text": " 是一个"
+                    },
+                    {
+                      "text": "中间件工厂函数",
+                      "bold": true
+                    },
+                    {
+                      "text": "（Factory），调用这个工厂函数后返回的结果才是真正的 Koa 中间件。之所以写成一个工厂函数，是因为我们可以通过给工厂函数传参的方式来更好地控制中间件的行为（当然这里的 "
+                    },
+                    {
+                      "text": "logger",
+                      "code": true
+                    },
+                    {
+                      "text": " 比较简单，就没有任何参数）。"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "在这个中间件的第一阶段，我们通过 "
+                    },
+                    {
+                      "text": "Date.now()",
+                      "code": true
+                    },
+                    {
+                      "text": " 先获取请求进入的时间，然后通过 "
+                    },
+                    {
+                      "text": "await next()",
+                      "code": true
+                    },
+                    {
+                      "text": " 让出执行权，等待下游中间件运行结束后，再在第二阶段通过计算 "
+                    },
+                    {
+                      "text": "Date.now()",
+                      "code": true
+                    },
+                    {
+                      "text": " 的差值来得出处理请求所用的时间。"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "思考一下，如果用 Express 来实现这个功能，中间件应该怎么写，会有 Koa 这么简单优雅吗？"
+                    }
+                  ]
+                },
+                {
+                  "type": "note",
+                  "level": "info",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "text": "这里通过两个 "
+                        },
+                        {
+                          "text": "Date.now()",
+                          "code": true
+                        },
+                        {
+                          "text": " 之间的差值来计算运行时间其实是不精确的，为了获取更准确的时间，建议使用 "
+                        },
+                        {
+                          "text": "process.hrtime()",
+                          "code": true
+                        },
+                        {
+                          "text": " 。"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/server.ts",
+          "display": true,
+          "commit": "ef879a5bc3d20d212821ec75c2fa25a163d3b38b",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "然后我们在 "
+                    },
+                    {
+                      "text": "src/server.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " 中把刚才的 "
+                    },
+                    {
+                      "text": "logger",
+                      "code": true
+                    },
+                    {
+                      "text": " 中间件通过 "
+                    },
+                    {
+                      "text": "app.use",
+                      "code": true
+                    },
+                    {
+                      "text": " 注册进去，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/server.ts",
+              "commit": "ef879a5bc3d20d212821ec75c2fa25a163d3b38b",
+              "hiddenLines": [
+                [
+                  0,
+                  2
+                ],
+                [
+                  14,
+                  20
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "这时候再访问我们的服务器（通过 Curl 或者其他请求工具），应该可以看到输出日志："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/2a4c6b79-9631-4f56-afa0-c2bee8c966b9.png"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "关于 Koa 框架本身的内容基本讲完了，但是对于一个比较完整的 Web 服务器来说，我们还需要更多的“武器装备”才能应对日常的业务逻辑。在接下来的部分，我们将通过社区的优秀组件来解决两个关键问题：路由和数据库，并演示如何结合 Koa 框架进行使用。"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+      "id": "f429bd70",
+      "articleId": "fac8401c",
+      "type": "step",
+      "children": [
+        {
+          "type": "heading-two",
+          "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+          "id": "cd63e3e2",
+          "fixed": true,
+          "children": [
+            {
+              "text": "实现路由配置"
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "由于 Koa 只是一个中间件框架，所以路由的实现需要独立的 npm 包。首先安装 "
+                },
+                {
+                  "text": "@koa/router",
+                  "code": true
+                },
+                {
+                  "text": " 及其 TypeScript 类型定义："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ npm install @koa/router"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ npm install @types/koa__router -D"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "note",
+              "level": "warning",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "有些教程使用 "
+                    },
+                    {
+                      "text": "koa-router",
+                      "code": true
+                    },
+                    {
+                      "text": " ，但由于 "
+                    },
+                    {
+                      "text": "koa-router",
+                      "code": true
+                    },
+                    {
+                      "text": " 目前处于几乎无人维护的状态，所以我们这里使用维护更积极的 Fork 版本 "
+                    },
+                    {
+                      "text": "@koa/router",
+                      "code": true
+                    },
+                    {
+                      "text": "。"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "路由规划"
+                }
+              ],
+              "id": "QSHVwIvKK"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "在这篇教程中，我们将实现以下路由："
+                }
+              ]
+            },
+            {
+              "type": "bulleted-list",
+              "children": [
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "GET /users",
+                      "code": true
+                    },
+                    {
+                      "text": " ：查询所有的用户"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "GET /users/:id",
+                      "code": true
+                    },
+                    {
+                      "text": " ：查询单个用户"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "PUT /users/:id",
+                      "code": true
+                    },
+                    {
+                      "text": " ：更新单个用户"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "DELETE /users/:id",
+                      "code": true
+                    },
+                    {
+                      "text": " ：删除单个用户"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "POST /users/login",
+                      "code": true
+                    },
+                    {
+                      "text": " ：登录（获取 JWT Token）"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "POST /users/register",
+                      "code": true
+                    },
+                    {
+                      "text": " ：注册用户"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "package-lock.json",
+          "display": false,
+          "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package-lock.json",
+              "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+              "hiddenLines": [
+                [
+                  0,
+                  10
+                ],
+                [
+                  30,
+                  160
+                ],
+                [
+                  176,
+                  564
+                ],
+                [
+                  579,
+                  914
+                ],
+                [
+                  926,
+                  1063
+                ],
+                [
+                  1075,
+                  1105
+                ],
+                [
+                  1115,
+                  1217
+                ],
+                [
+                  1232,
+                  1622
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "package.json",
+          "display": false,
+          "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package.json",
+              "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+              "hiddenLines": [
+                [
+                  0,
+                  14
+                ],
+                [
+                  22,
+                  22
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/auth.ts",
+          "display": true,
+          "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "实现 Controller"
+                    }
+                  ],
+                  "id": "TonVpKikB"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "在 "
+                    },
+                    {
+                      "text": "src",
+                      "code": true
+                    },
+                    {
+                      "text": " 中创建 "
+                    },
+                    {
+                      "text": "controllers",
+                      "code": true
+                    },
+                    {
+                      "text": " 目录，用于存放控制器有关的代码。首先是 "
+                    },
+                    {
+                      "text": "AuthController",
+                      "code": true
+                    },
+                    {
+                      "text": " ，创建 "
+                    },
+                    {
+                      "text": "src/controllers/auth.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/auth.ts",
+              "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/user.ts",
+          "display": true,
+          "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "然后创建 "
+                    },
+                    {
+                      "text": "src/controllers/user.ts",
+                      "code": true
+                    },
+                    {
+                      "text": "，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/user.ts",
+              "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "注意到在后面三个 Controller 中，我们通过 "
+                    },
+                    {
+                      "text": "ctx.params",
+                      "code": true
+                    },
+                    {
+                      "text": " 获取到路由参数 "
+                    },
+                    {
+                      "text": "id",
+                      "code": true
+                    },
+                    {
+                      "text": " 。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/routes.ts",
+          "display": true,
+          "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "实现路由"
+                    }
+                  ],
+                  "id": "74nZfmBeB"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "然后我们创建 "
+                    },
+                    {
+                      "text": "src/routes.ts",
+                      "code": true
+                    },
+                    {
+                      "text": "，用于把控制器挂载到对应的路由上面："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/routes.ts",
+              "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "可以看到 "
+                    },
+                    {
+                      "text": "@koa/router",
+                      "code": true
+                    },
+                    {
+                      "text": " 的使用方式基本上与 Express Router 保持一致。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/server.ts",
+          "display": true,
+          "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "注册路由"
+                    }
+                  ],
+                  "id": "nTUytG0qk"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "最后，我们需要将 "
+                    },
+                    {
+                      "text": "router",
+                      "code": true
+                    },
+                    {
+                      "text": " 注册为中间件。打开 "
+                    },
+                    {
+                      "text": "src/server.ts",
+                      "code": true
+                    },
+                    {
+                      "text": "，修改代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/server.ts",
+              "commit": "0a61cd652bf992dae75c5fa722370807b34dde07",
+              "hiddenLines": [
+                [
+                  0,
+                  2
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "可以看到，这里我们调用 "
+                    },
+                    {
+                      "text": "router",
+                      "code": true
+                    },
+                    {
+                      "text": " 对象的 "
+                    },
+                    {
+                      "text": "routes",
+                      "code": true
+                    },
+                    {
+                      "text": " 方法获取到对应的 Koa 中间件，还调用了 "
+                    },
+                    {
+                      "text": "allowedMethods",
+                      "code": true
+                    },
+                    {
+                      "text": " 方法注册了 HTTP 方法检测的中间件，这样当用户通过不正确的 HTTP 方法访问 API 时，就会自动返回 405 Method Not Allowed 状态码。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "我们通过 Curl 来测试路由（也可以自行使用 Postman）："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl localhost:3000/hello"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "Not Found"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl localhost:3000/auth/register"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "Method Not Allowed"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl -X POST localhost:3000/auth/register"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "Register controller"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl -X POST localhost:3000/auth/login"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "Login controller"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl localhost:3000/users"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "ListUsers controller"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl localhost:3000/users/123"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "ShowUserDetail controller with ID = 123"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl -X PUT localhost:3000/users/123"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "UpdateUser controller with ID = 123"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ curl -X DELETE localhost:3000/users/123"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "DeleteUser controller with ID = 123"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "同时可以看到服务器的输出日志如下："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/be495531-ecaa-4178-91f4-334817ff7507.png"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "路由已经接通，接下来就让我们来接入真实的数据吧！"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+      "id": "eae5863d",
+      "articleId": "fac8401c",
+      "type": "step",
+      "children": [
+        {
+          "type": "heading-two",
+          "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+          "id": "f4e941f0",
+          "fixed": true,
+          "children": [
+            {
+              "text": "接入 MySQL 数据库"
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "从这一步开始，我们将正式接入数据库。Koa 本身是一个中间件框架，理论上可以接入任何类型的数据库，这里我们选择流行的关系型数据库 MySQL。并且，由于我们使用了 TypeScript 开发，因此这里使用为 TS 量身打造的 "
+                },
+                {
+                  "text": "ORM",
+                  "link": true,
+                  "url": "http://www.ruanyifeng.com/blog/2019/02/orm-tutorial.html"
+                },
+                {
+                  "text": " 库 TypeORM。"
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "数据库的准备工作"
+                }
+              ],
+              "id": "pwHO70w3j"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "首先，请安装和配置好 MySQL 数据库，可以通过两种方式："
+                }
+              ]
+            },
+            {
+              "type": "bulleted-list",
+              "children": [
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "官网下载安装包，这里是"
+                    },
+                    {
+                      "text": "下载地址",
+                      "link": true,
+                      "url": "https://dev.mysql.com/downloads/mysql/"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                },
+                {
+                  "type": "list-item",
+                  "children": [
+                    {
+                      "text": "使用 MySQL Docker 镜像"
+                    }
+                  ],
+                  "level": 0,
+                  "parent": "bulleted-list"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "在确保 MySQL 实例运行之后，我们打开终端，通过命令行连接数据库："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ mysql -u root -p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "输入预先设置好的根帐户密码之后，就进入了 MySQL 的交互式执行客户端，然后运行以下命令："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "sql",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "--- 创建数据库"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "CREATE DATABASE koa;"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "--- 创建用户并授予权限"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "CREATE USER 'user'@'localhost' IDENTIFIED BY 'pass';"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "GRANT ALL PRIVILEGES ON koa.* TO 'user'@'localhost';"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "--- 处理 MySQL 8.0 版本的认证协议问题"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "ALTER USER 'user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'pass';"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "flush privileges;"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "heading-three",
+              "children": [
+                {
+                  "text": "TypeORM 的配置和连接"
+                }
+              ],
+              "id": "MAqqubDXU"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "首先安装相关的 npm 包，分别是 MySQL 驱动、TypeORM 及 "
+                },
+                {
+                  "text": "reflect-metadata",
+                  "code": true
+                },
+                {
+                  "text": "（反射 API 库，用于 TypeORM 推断模型的元数据）："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "$ npm install mysql typeorm reflect-metadata"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "file": ".gitignore",
+          "display": false,
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": ".gitignore",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [
+                [
+                  0,
+                  107
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "file": ".tutureignore",
+          "display": false,
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": ".tutureignore",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "ormconfig.json",
+          "display": true,
+          "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "然后在项目根目录创建 "
+                    },
+                    {
+                      "text": "ormconfig.json",
+                      "code": true
+                    },
+                    {
+                      "text": " ，TypeORM 会读取这个数据库配置进行连接，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "ormconfig.json",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "这里有一些需要解释的字段："
+                    }
+                  ]
+                },
+                {
+                  "type": "bulleted-list",
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "database",
+                          "code": true
+                        },
+                        {
+                          "text": " 就是我们刚刚创建的 "
+                        },
+                        {
+                          "text": "koa",
+                          "code": true
+                        },
+                        {
+                          "text": " 数据库"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "bulleted-list"
+                    },
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "synchronize",
+                          "code": true
+                        },
+                        {
+                          "text": " 设为 "
+                        },
+                        {
+                          "text": "true",
+                          "code": true
+                        },
+                        {
+                          "text": " 能够让我们每次修改模型定义后都能自动同步到数据库"
+                        },
+                        {
+                          "text": "（如果你接触过其他的 ORM 库，其实就是自动数据迁移）",
+                          "italic": true
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "bulleted-list"
+                    },
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "entities",
+                          "code": true
+                        },
+                        {
+                          "text": " 字段定义了模型文件的路径，我们马上就来创建"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "bulleted-list"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/server.ts",
+          "display": true,
+          "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "接着修改 "
+                    },
+                    {
+                      "text": "src/server.ts",
+                      "code": true
+                    },
+                    {
+                      "text": "，在其中连接数据库，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/server.ts",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/entity/user.ts",
+          "display": true,
+          "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "创建数据模型定义"
+                    }
+                  ],
+                  "id": "QD82Y3R2r"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "在 "
+                    },
+                    {
+                      "text": "src",
+                      "code": true
+                    },
+                    {
+                      "text": " 目录下创建 "
+                    },
+                    {
+                      "text": "entity",
+                      "code": true
+                    },
+                    {
+                      "text": " 目录，用于存放数据模型定义文件。在其中创建 "
+                    },
+                    {
+                      "text": "user.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，代表用户模型，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/entity/user.ts",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "可以看到，用户模型有四个字段，其含义很容易理解。而 TypeORM 则是通过"
+                    },
+                    {
+                      "text": "装饰器",
+                      "link": true,
+                      "url": "https://www.tslang.cn/docs/handbook/decorators.html"
+                    },
+                    {
+                      "text": "这种优雅的方式来将我们的 "
+                    },
+                    {
+                      "text": "User",
+                      "code": true
+                    },
+                    {
+                      "text": " 类映射到数据库中的表。这里我们使用了三个装饰器："
+                    }
+                  ]
+                },
+                {
+                  "type": "bulleted-list",
+                  "children": [
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "Entity",
+                          "code": true
+                        },
+                        {
+                          "text": " 用于装饰整个类，使其变成一个数据库模型"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "bulleted-list"
+                    },
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "Column",
+                          "code": true
+                        },
+                        {
+                          "text": " 用于装饰类的某个属性，使其对应于数据库表中的一列，可提供一系列选项参数，例如我们给 "
+                        },
+                        {
+                          "text": "password",
+                          "code": true
+                        },
+                        {
+                          "text": " 设置了 "
+                        },
+                        {
+                          "text": "select: false",
+                          "code": true
+                        },
+                        {
+                          "text": " ，使得这个字段在查询时默认不被选中"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "bulleted-list"
+                    },
+                    {
+                      "type": "list-item",
+                      "children": [
+                        {
+                          "text": "PrimaryGeneratedColumn",
+                          "code": true
+                        },
+                        {
+                          "text": " 则是装饰主列，它的值将自动生成"
+                        }
+                      ],
+                      "level": 0,
+                      "parent": "bulleted-list"
+                    }
+                  ]
+                },
+                {
+                  "type": "note",
+                  "level": "info",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "text": "关于 TypeORM 所有的装饰器定义及其详细使用，请参考其"
+                        },
+                        {
+                          "text": "装饰器文档",
+                          "link": true,
+                          "url": "https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/decorator-reference.md"
+                        },
+                        {
+                          "text": "。"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "file": "package-lock.json",
+          "display": false,
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package-lock.json",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [
+                [
+                  0,
+                  23
+                ],
+                [
+                  38,
+                  68
+                ],
+                [
+                  78,
+                  215
+                ],
+                [
+                  225,
+                  280
+                ],
+                [
+                  298,
+                  307
+                ],
+                [
+                  373,
+                  445
+                ],
+                [
+                  453,
+                  460
+                ],
+                [
+                  476,
+                  524
+                ],
+                [
+                  544,
+                  554
+                ],
+                [
+                  566,
+                  571
+                ],
+                [
+                  665,
+                  683
+                ],
+                [
+                  714,
+                  722
+                ],
+                [
+                  734,
+                  761
+                ],
+                [
+                  773,
+                  780
+                ],
+                [
+                  792,
+                  802
+                ],
+                [
+                  812,
+                  827
+                ],
+                [
+                  839,
+                  847
+                ],
+                [
+                  859,
+                  866
+                ],
+                [
+                  876,
+                  895
+                ],
+                [
+                  917,
+                  919
+                ],
+                [
+                  953,
+                  953
+                ],
+                [
+                  1013,
+                  1015
+                ],
+                [
+                  1035,
+                  1071
+                ],
+                [
+                  1104,
+                  1104
+                ],
+                [
+                  1116,
+                  1144
+                ],
+                [
+                  1170,
+                  1180
+                ],
+                [
+                  1196,
+                  1197
+                ],
+                [
+                  1207,
+                  1228
+                ],
+                [
+                  1238,
+                  1297
+                ],
+                [
+                  1313,
+                  1416
+                ],
+                [
+                  1431,
+                  1486
+                ],
+                [
+                  1494,
+                  1494
+                ],
+                [
+                  1619,
+                  1662
+                ],
+                [
+                  1713,
+                  1718
+                ],
+                [
+                  1726,
+                  1728
+                ],
+                [
+                  1781,
+                  1794
+                ],
+                [
+                  1834,
+                  1847
+                ],
+                [
+                  1859,
+                  1897
+                ],
+                [
+                  1905,
+                  1905
+                ],
+                [
+                  1933,
+                  1935
+                ],
+                [
+                  1947,
+                  1958
+                ],
+                [
+                  1975,
+                  1977
+                ],
+                [
+                  1992,
+                  1995
+                ],
+                [
+                  2013,
+                  2024
+                ],
+                [
+                  2056,
+                  2066
+                ],
+                [
+                  2083,
+                  2085
+                ],
+                [
+                  2112,
+                  2112
+                ],
+                [
+                  2178,
+                  2213
+                ],
+                [
+                  2225,
+                  2247
+                ],
+                [
+                  2276,
+                  2402
+                ],
+                [
+                  2461,
+                  2463
+                ],
+                [
+                  2510,
+                  2522
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "package.json",
+          "display": false,
+          "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package.json",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [
+                [
+                  0,
+                  23
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/user.ts",
+          "display": true,
+          "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "在 Controller 中操作数据库"
+                    }
+                  ],
+                  "id": "doqWdcwcO"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "然后就可以在 Controller 中进行数据的增删改查操作了。首先我们打开 "
+                    },
+                    {
+                      "text": "src/controllers/user.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，实现所有 Controller 的逻辑，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/user.ts",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "TypeORM 中操作数据模型主要是通过 "
+                    },
+                    {
+                      "text": "Repository",
+                      "code": true
+                    },
+                    {
+                      "text": " 实现的，在 Controller 中，可以通过 "
+                    },
+                    {
+                      "text": "getManager().getRepository(Model)",
+                      "code": true
+                    },
+                    {
+                      "text": " 来获取到，之后 "
+                    },
+                    {
+                      "text": "Repository",
+                      "code": true
+                    },
+                    {
+                      "text": " 的查询 API 就与其他的库很类似了。"
+                    }
+                  ]
+                },
+                {
+                  "type": "note",
+                  "level": "info",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "text": "关于 Repository 所有的查询 API，请参考"
+                        },
+                        {
+                          "text": "这里的文档",
+                          "link": true,
+                          "url": "https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/repository-api.md"
+                        },
+                        {
+                          "text": "。"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "细心的你应该还发现我们通过 "
+                    },
+                    {
+                      "text": "ctx.request.body",
+                      "code": true
+                    },
+                    {
+                      "text": " 获取到了请求体的数据，这是我们在第一步就配置好的 "
+                    },
+                    {
+                      "text": "bodyParser",
+                      "code": true
+                    },
+                    {
+                      "text": " 中间件在 Context 对象中添加的。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/auth.ts",
+          "display": true,
+          "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "然后我们修改 "
+                    },
+                    {
+                      "text": "AuthController",
+                      "code": true
+                    },
+                    {
+                      "text": " ，实现具体的注册逻辑。由于密码不能明文保存在数据库中，需要使用非对称算法进行加密，这里我们使用曾经获得过密码加密大赛冠军的 "
+                    },
+                    {
+                      "text": "Argon2",
+                      "link": true,
+                      "url": "https://www.argon2.com/"
+                    },
+                    {
+                      "text": " 算法。安装对应的 npm 包："
+                    }
+                  ]
+                },
+                {
+                  "type": "code-block",
+                  "lang": "bash",
+                  "children": [
+                    {
+                      "type": "code-line",
+                      "children": [
+                        {
+                          "text": "npm install argon2"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "然后实现具体的 "
+                    },
+                    {
+                      "text": "register",
+                      "code": true
+                    },
+                    {
+                      "text": " Controller，修改 "
+                    },
+                    {
+                      "text": "src/controllers/auth.ts",
+                      "code": true
+                    },
+                    {
+                      "text": "，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/auth.ts",
+              "commit": "58e381decc477c62738592e9525dc214a0f9a517",
+              "hiddenLines": [
+                [
+                  7,
+                  9
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "确保服务器在运行之后，我们就可以开始测试一波了。首先是注册用户（这里我用 Postman 演示，直观一些）："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/aa133363-7223-4b43-9fd2-bed7d9b21e28.png"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "你可以继续注册几个用户，然后继续访问 "
+                },
+                {
+                  "text": "/users",
+                  "code": true
+                },
+                {
+                  "text": " 相关的路由，应该可以成功地获取、修改和删除相应的数据了！"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+      "id": "7d4564c6",
+      "articleId": "fac8401c",
+      "type": "step",
+      "children": [
+        {
+          "type": "heading-two",
+          "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+          "id": "947bb63b",
+          "fixed": true,
+          "children": [
+            {
+              "text": "实现 JWT 鉴权"
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "JSON Web Token（JWT）是一种流行的 RESTful API 鉴权方案。这里我们将手把手带你学会如何在 Koa 框架中使用 JWT 鉴权，但是不会过多讲解其原理（可参考"
+                },
+                {
+                  "text": "这篇文章",
+                  "link": true,
+                  "url": "http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html"
+                },
+                {
+                  "text": "进行学习）。"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "首先安装相关的 npm 包："
+                }
+              ]
+            },
+            {
+              "type": "code-block",
+              "lang": "bash",
+              "children": [
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "npm install koa-jwt jsonwebtoken"
+                    }
+                  ]
+                },
+                {
+                  "type": "code-line",
+                  "children": [
+                    {
+                      "text": "npm install @types/jsonwebtoken -D"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "file": "package-lock.json",
+          "display": false,
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package-lock.json",
+              "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+              "hiddenLines": [
+                [
+                  0,
+                  120
+                ],
+                [
+                  136,
+                  233
+                ],
+                [
+                  249,
+                  478
+                ],
+                [
+                  490,
+                  577
+                ],
+                [
+                  589,
+                  871
+                ],
+                [
+                  886,
+                  1192
+                ],
+                [
+                  1204,
+                  1330
+                ],
+                [
+                  1373,
+                  1461
+                ],
+                [
+                  1483,
+                  1493
+                ],
+                [
+                  1535,
+                  1847
+                ],
+                [
+                  1876,
+                  1891
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "package.json",
+          "display": false,
+          "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "package.json",
+              "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+              "hiddenLines": [
+                [
+                  0,
+                  11
+                ],
+                [
+                  19,
+                  25
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/constants.ts",
+          "display": true,
+          "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "创建 "
+                    },
+                    {
+                      "text": "src/constants.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，用于存放 JWT Secret 常量，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/constants.ts",
+              "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "在实际开发中，请替换成一个足够复杂的字符串，并且最好通过环境变量的方式注入。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/routes.ts",
+          "display": true,
+          "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "重新规划路由"
+                    }
+                  ],
+                  "id": "hFd181ZnH"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "有些路由我们希望只有已登录的用户才有权查看（"
+                    },
+                    {
+                      "text": "受保护的路由",
+                      "italic": true
+                    },
+                    {
+                      "text": "），而另一些路由则是所有请求都可以访问（"
+                    },
+                    {
+                      "text": "不受保护的路由",
+                      "italic": true
+                    },
+                    {
+                      "text": "）。在 Koa 的洋葱模型中，我们可以这样实现："
+                    }
+                  ]
+                },
+                {
+                  "type": "image",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ],
+                  "url": "https://imgkr.cn-bj.ufileos.com/7fda986d-48f6-468c-9c90-248498133a0c.png"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "所有请求都可以直接访问未受保护的路由，但是受保护的路由就放在 JWT 中间件的后面（或者从洋葱模型的角度看是“里面”），这样对于没有携带 JWT Token 的请求就直接返回，而不会继续传递下去。"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "想法明确之后，打开 "
+                    },
+                    {
+                      "text": "src/routes.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " 路由文件，修改代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/routes.ts",
+              "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "上面我们分别实现了 "
+                    },
+                    {
+                      "text": "protectedRouter",
+                      "code": true
+                    },
+                    {
+                      "text": " 和 "
+                    },
+                    {
+                      "text": "unprotectedRouter",
+                      "code": true
+                    },
+                    {
+                      "text": " ，分别对应于需要 JWT 中间件保护的路由和不需要保护的路由。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/server.ts",
+          "display": true,
+          "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "注册 JWT 中间件"
+                    }
+                  ],
+                  "id": "wWg0F48SZ"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "接着便是注册 JWT 中间件，并分别在其前后注册不需要保护的路由 "
+                    },
+                    {
+                      "text": "unprotectedRouter",
+                      "code": true
+                    },
+                    {
+                      "text": " 和需要保护的路由 "
+                    },
+                    {
+                      "text": "protectedRouter",
+                      "code": true
+                    },
+                    {
+                      "text": "。修改服务器文件 "
+                    },
+                    {
+                      "text": "src/server.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/server.ts",
+              "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+              "hiddenLines": [
+                [
+                  0,
+                  3
+                ],
+                [
+                  14,
+                  20
+                ],
+                [
+                  33,
+                  34
+                ],
+                [
+                  36,
+                  36
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "对应刚才“洋葱模型”的设计图，是不是感觉很直观？"
+                    }
+                  ]
+                },
+                {
+                  "type": "note",
+                  "level": "info",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "text": "在 JWT 中间件注册完毕后，如果用户请求携带了有效的 Token，后面的 "
+                        },
+                        {
+                          "text": "protectedRouter",
+                          "code": true
+                        },
+                        {
+                          "text": " 就可以通过 "
+                        },
+                        {
+                          "text": "ctx.state.user",
+                          "code": true
+                        },
+                        {
+                          "text": " 获取到 Token 的内容（更精确的说法是 Payload，负载，一般是用户的关键信息，例如 ID）了；反之，如果 Token 缺失或无效，那么 JWT 中间件会直接自动返回 401 错误。关于 koa-jwt 的更多使用细节，请参考其"
+                        },
+                        {
+                          "text": "文档",
+                          "link": true,
+                          "url": "https://github.com/koajs/jwt"
+                        },
+                        {
+                          "text": "。"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/auth.ts",
+          "display": true,
+          "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "在 Login 中签发 JWT Token"
+                    }
+                  ],
+                  "id": "U9Q6b191i"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "我们需要提供一个 API 端口让用户可以获取到 JWT Token，最合适的当然是登录接口 "
+                    },
+                    {
+                      "text": "/auth/login",
+                      "code": true
+                    },
+                    {
+                      "text": "。打开 "
+                    },
+                    {
+                      "text": "src/controllers/auth.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，在 "
+                    },
+                    {
+                      "text": "login",
+                      "code": true
+                    },
+                    {
+                      "text": " 控制器中实现签发 JWT Token 的逻辑，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/auth.ts",
+              "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+              "hiddenLines": [
+                [
+                  0,
+                  2
+                ],
+                [
+                  5,
+                  5
+                ],
+                [
+                  31,
+                  44
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "在 "
+                    },
+                    {
+                      "text": "login",
+                      "code": true
+                    },
+                    {
+                      "text": " 中，我们首先根据用户名（请求体中的 "
+                    },
+                    {
+                      "text": "name",
+                      "code": true
+                    },
+                    {
+                      "text": " 字段）查询对应的用户，如果该用户不存在，则直接返回 401；存在的话再通过 "
+                    },
+                    {
+                      "text": "argon2.verify",
+                      "code": true
+                    },
+                    {
+                      "text": " 来验证请求体中的明文密码 "
+                    },
+                    {
+                      "text": "password",
+                      "code": true
+                    },
+                    {
+                      "text": " 是否和数据库中存储的加密密码是否一致，如果一致则通过 "
+                    },
+                    {
+                      "text": "jwt.sign",
+                      "code": true
+                    },
+                    {
+                      "text": " 签发 Token，如果不一致则还是返回 401。"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "这里的 Token 负载就是标识用户 ID 的对象 "
+                    },
+                    {
+                      "text": "{ id: user.id }",
+                      "code": true
+                    },
+                    {
+                      "text": " ，这样后面鉴权成功后就可以通过 "
+                    },
+                    {
+                      "text": "ctx.user.id",
+                      "code": true
+                    },
+                    {
+                      "text": " 来获取用户 ID。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/user.ts",
+          "display": true,
+          "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "在 User 控制器中添加访问控制"
+                    }
+                  ],
+                  "id": "qnbhDhks0"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "Token 的中间件和签发都搞定之后，最后一步就是在合适的地方校验用户的 Token，确认其是否有足够的权限。最典型的场景便是，在更新或删除用户时，我们要"
+                    },
+                    {
+                      "text": "确保是用户本人在操作",
+                      "bold": true
+                    },
+                    {
+                      "text": "。打开 "
+                    },
+                    {
+                      "text": "src/controllers/user.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/user.ts",
+              "commit": "bd23923863aa940c69d7ff8d0c0036b184bb1054",
+              "hiddenLines": [
+                [
+                  0,
+                  3
+                ],
+                [
+                  6,
+                  24
+                ],
+                [
+                  41,
+                  46
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "两个 Controller 的鉴权逻辑基本相同，我们通过比较 "
+                    },
+                    {
+                      "text": "ctx.params.id",
+                      "code": true
+                    },
+                    {
+                      "text": " 和 "
+                    },
+                    {
+                      "text": "ctx.state.user.id",
+                      "code": true
+                    },
+                    {
+                      "text": " 是否相同，如果不相同则返回 403 Forbidden 错误，相同则继续执行相应的数据库操作。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "代码写完之后，我们用刚才注册的一个用户信息去访问登录 API："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/0fce7c86-23a4-482f-97b0-731898531e78.png"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "成功地获取到了 JWT Token！然后我们复制获取到的 Token，在接下来测试受保护的路由时，我们需要添加一个 "
+                },
+                {
+                  "text": "Authorization",
+                  "code": true
+                },
+                {
+                  "text": " 头部，值为 "
+                },
+                {
+                  "text": "Bearer <JWT_TOKEN>",
+                  "code": true
+                },
+                {
+                  "text": " ，如下图所示："
+                }
+              ]
+            },
+            {
+              "type": "image",
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "url": "https://imgkr.cn-bj.ufileos.com/065a3c61-2cdb-4537-9467-c8387553f9a2.png"
+            },
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "然后就可以测试受保护的路由了！这里由于篇幅限制就省略了。"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+      "id": "bd037aa8",
+      "articleId": "fac8401c",
+      "type": "step",
+      "children": [
+        {
+          "type": "heading-two",
+          "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+          "id": "094ffc40",
+          "fixed": true,
+          "children": [
+            {
+              "text": "错误处理"
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "最后，我们来简单地聊一下 Koa 中的错误处理。由于 Koa 采用了 async 函数和 Promise 作为异步编程的方案，所以错误处理自然也很简单了——直接用 JavaScript 自带的 try-catch 语法就可以轻松搞定。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/exceptions.ts",
+          "display": true,
+          "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "实现自定义错误（异常）"
+                    }
+                  ],
+                  "id": "b-AutOpal"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "首先，让我们来实现一些自定义的错误（或者异常，本文不作区分）类。创建 "
+                    },
+                    {
+                      "text": "src/exceptions.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/exceptions.ts",
+              "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+              "hiddenLines": [],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "这里的错误类型参考了 "
+                    },
+                    {
+                      "text": "Nest.js",
+                      "link": true,
+                      "url": "https://docs.nestjs.com/exception-filters"
+                    },
+                    {
+                      "text": " 的设计。出于学习目的，这里作了简化，并且只实现了我们需要用到的错误。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/auth.ts",
+          "display": true,
+          "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "在 Controller 中使用自定义错误"
+                    }
+                  ],
+                  "id": "aeZl_HDu9"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "接着我们便可以在 Controller 中使用刚才的自定义错误了。打开 "
+                    },
+                    {
+                      "text": "src/controllers/auth.ts",
+                      "code": true
+                    },
+                    {
+                      "text": "，修改代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/auth.ts",
+              "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+              "hiddenLines": [
+                [
+                  0,
+                  6
+                ],
+                [
+                  11,
+                  17
+                ],
+                [
+                  33,
+                  46
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "可以看到，我们将直接手动设置状态码和响应体的代码改成了简单的错误抛出，代码清晰了很多。"
+                    }
+                  ]
+                },
+                {
+                  "type": "note",
+                  "level": "info",
+                  "children": [
+                    {
+                      "type": "paragraph",
+                      "children": [
+                        {
+                          "text": "Koa 的 Context 对象提供了一个便捷方法 "
+                        },
+                        {
+                          "text": "throw",
+                          "code": true
+                        },
+                        {
+                          "text": " ，同样可以抛出异常，例如 "
+                        },
+                        {
+                          "text": "ctx.throw(400, 'Bad request')",
+                          "code": true
+                        },
+                        {
+                          "text": "。"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/controllers/user.ts",
+          "display": true,
+          "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "同样地，修改 "
+                    },
+                    {
+                      "text": "UserController",
+                      "code": true
+                    },
+                    {
+                      "text": " 相关的逻辑。修改 "
+                    },
+                    {
+                      "text": "src/controllers/user.ts",
+                      "code": true
+                    },
+                    {
+                      "text": "，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/controllers/user.ts",
+              "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+              "hiddenLines": [
+                [
+                  0,
+                  3
+                ],
+                [
+                  8,
+                  12
+                ],
+                [
+                  14,
+                  14
+                ],
+                [
+                  16,
+                  17
+                ],
+                [
+                  20,
+                  21
+                ],
+                [
+                  29,
+                  29
+                ],
+                [
+                  38,
+                  47
+                ],
+                [
+                  49,
+                  49
+                ],
+                [
+                  51,
+                  51
+                ],
+                [
+                  60,
+                  63
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "src/server.ts",
+          "display": true,
+          "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+          "type": "file",
+          "children": [
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "heading-three",
+                  "children": [
+                    {
+                      "text": "添加错误处理中间件"
+                    }
+                  ],
+                  "id": "n4waCAO9p"
+                },
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "最后，我们需要添加错误处理中间件来捕获在 Controller 中抛出的错误。打开 "
+                    },
+                    {
+                      "text": "src/server.ts",
+                      "code": true
+                    },
+                    {
+                      "text": " ，实现错误处理中间件，代码如下："
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "diff-block",
+              "file": "src/server.ts",
+              "commit": "e473e2566cf0d4b2ff8a076d7aa2e6208bad954b",
+              "hiddenLines": [
+                [
+                  0,
+                  9
+                ],
+                [
+                  13,
+                  14
+                ],
+                [
+                  31,
+                  41
+                ],
+                [
+                  43,
+                  43
+                ]
+              ],
+              "children": [
+                {
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "type": "explain",
+              "fixed": true,
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "可以看到，在这个错误处理中间件中，我们把返回的响应数据转换成 JSON 格式（而不是之前的 Plain Text），这样看上去更统一一些。"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "explain",
+          "fixed": true,
+          "children": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "至此，这篇教程就结束了。内容很多，希望对你有一定的帮助。我们的用户系统已经能够处理大部分情形，但是对于一些边际情况的处理依然很糟糕（能想到有哪些吗？）。不过话说回来，相信你已经确定 Koa 是一个很棒的框架了吧？"
+                }
+              ],
+              "id": "1bUS58OGI"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "version": "v1",
+  "remotes": [
+    {
+      "name": "gitee",
+      "refs": {
+        "fetch": "https://gitee.com/tuture/koa-quickstart.git",
+        "push": "https://gitee.com/tuture/koa-quickstart.git"
+      }
+    },
+    {
+      "name": "origin",
+      "refs": {
+        "fetch": "https://github.com/tuture-dev/koa-quickstart.git",
+        "push": "https://github.com/tuture-dev/koa-quickstart.git"
+      }
+    }
+  ]
+}
