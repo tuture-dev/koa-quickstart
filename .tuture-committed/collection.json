@@ -9,8 +9,17 @@
       "id": "fac8401c",
       "name": "一杯茶的时间，上手 Koa2 + MySQL 开发",
       "description": "凭借精巧的“洋葱模型”和对 Promise 以及 async/await 异步编程的完全支持，Koa 框架自从诞生以来就吸引了无数 Node 爱好者。然而 Koa 本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持。这篇教程不仅会带你梳理 Koa 的基础知识，还会充分地运用和讲解构建 Web 应用必须的组件（路由、数据库、鉴权等），最终实现一个较为完善的用户系统。",
-      "topics": [],
-      "categories": [],
+      "topics": [
+        "Koa",
+        "MySQL",
+        "JWT",
+        "TypeScript"
+      ],
+      "categories": [
+        "后端",
+        "Node.js",
+        "入门"
+      ],
       "created": "2020-05-22T01:47:30.970Z",
       "cover": "https://imgkr.cn-bj.ufileos.com/b8334e2a-c639-4d91-aef9-95e158bf6523.jpg"
     }
